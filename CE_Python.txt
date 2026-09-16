@@ -1,0 +1,1748 @@
+# Curso de Especialización en Python — Desarrollo profundo por módulos
+
+A continuación se desarrollan con **profundidad teórica y práctica** todos los epígrafes, explicados para un estudiante de informática. Cada epígrafe incluye: **conceptos clave**, **explicación razonada**, **ejemplos ejecutables**, **errores frecuentes** y **batería de test**.
+
+---
+
+# MÓDULO 5098 — ENTORNOS Y SINTAXIS EN PYTHON (3 ECTS, 25 h)
+
+## Epígrafe 1.1 — Análisis de problemas y estrategias de resolución
+
+### 1.1.1 Conceptos clave
+
+| Concepto | Definición |
+|---|---|
+| **Entorno de aplicación** | Contexto donde se ejecutará el programa: CLI, web, escritorio, móvil, IoT, ciencia de datos. |
+| **Estrategia** | Plan ordenado de acciones para transformar una entrada en una salida correcta. |
+| **Descomposición** | Dividir un problema complejo en subproblemas más simples e independientes. |
+| **Refinamiento por pasos** | Desarrollar la solución de lo general a lo específico. |
+| **Diagrama de flujo** | Representación gráfica del algoritmo mediante símbolos normalizados. |
+| **Implementabilidad** | Grado en que una solución puede codificarse con los recursos disponibles. |
+
+### 1.1.2 Explicación razonada
+
+Cuando un ingeniero informático se enfrenta a un problema, **no debe escribir código inmediatamente**. El proceso correcto es:
+
+1. **Comprender el problema**: identificar entradas, salidas, restricciones y casos límite.
+2. **Identificar el entorno**: no es lo mismo un script CLI que una API REST o un modelo de ML. El entorno condiciona librerías, rendimiento y despliegue.
+3. **Diseñar estrategias**: normalmente se aplica *divide y vencerás*. Cada subproblema se resuelve por separado y luego se integra.
+4. **Analizar dificultades**: complejidad temporal/espacial, dependencias externas, formatos de datos, concurrencia.
+5. **Representar con diagramas de flujo**: permiten visualizar el flujo antes de codificar. Símbolos estándar:
+   - Óvalo → inicio/fin
+   - Rectángulo → proceso
+   - Rombo → decisión
+   - Paralelogramo → entrada/salida
+   - Flechas → flujo
+6. **Seleccionar el diagrama óptimo**: el que sea más claro, modular y con menor coste de implementación.
+7. **Verificar implementabilidad en Python**: comprobar que existen librerías, que el rendimiento es aceptable y que la sintaxis lo permite.
+
+> **Ejemplo razonado**: si el problema es "calcular la nómina de 10.000 empleados", un diagrama con un bucle simple es implementable, pero si el problema es "procesar 10 TB de logs", habrá que pensar en `pandas`, `dask` o procesamiento por lotes.
+
+### 1.1.3 Práctica guiada
+
+```python
+# Problema: determinar si un año es bisiesto
+# Estrategia: descomposición en una condición booleana
+# Diagrama: decisión simple
+
+def es_bisiesto(anio: int) -> bool:
+    """
+    Un año es bisiesto si:
+    - Es divisible por 4 Y no por 100
+    - O es divisible por 400
+    """
+    return (anio % 4 == 0 and anio % 100 != 0) or (anio % 400 == 0)
+
+# Casos de prueba (verificación de implementabilidad)
+casos = [(2000, True), (1900, False), (2024, True), (2023, False)]
+for anio, esperado in casos:
+    assert es_bisiesto(anio) == esperado, f"Fallo en {anio}"
+print("Todos los casos pasan")
+```
+
+**Ejercicio**: dibuja el diagrama de flujo de `es_bisiesto` y compáralo con la implementación. ¿Hay alguna rama que no se ejecute nunca?
+
+### 1.1.4 Errores frecuentes
+
+- Codificar antes de analizar → retrabajo.
+- Ignorar el entorno → elegir librerías incompatibles.
+- No contemplar casos límite (vacío, negativo, desbordamiento).
+- Diagramas demasiado detallados que se vuelven ilegibles.
+
+### 1.1.5 Test (10 preguntas)
+
+1. ¿Qué símbolo representa una decisión en un diagrama de flujo?  
+ a) Rectángulo b) Rombo c) Óvalo d) Paralelogramo → **b**
+2. La descomposición modular busca principalmente…  
+ a) menos líneas b) reutilización y claridad c) más velocidad d) evitar funciones → **b**
+3. ¿Cuál NO es un entorno típico de Python?  
+ a) CLI b) Web c) Kernel Linux d) Data science → **c**
+4. Un pseudocódigo es…  
+ a) código ejecutable b) lenguaje formal c) descripción algorítmica legible d) bytecode → **c**
+5. La verificación de implementabilidad comprueba…  
+ a) que el diagrama es bonito b) que la solución puede codificarse en Python c) que no hay errores d) el coste → **b**
+6. En un diagrama de flujo, un paralelogramo indica…  
+ a) proceso b) decisión c) E/S d) inicio → **c**
+7. ¿Qué criterio NO ayuda a elegir el diagrama óptimo?  
+ a) modularidad b) claridad c) color del fondo d) coste → **c**
+8. La estrategia “divide y vencerás” implica…  
+ a) un solo bloque b) subproblemas independientes c) recursión obligatoria d) bucles infinitos → **b**
+9. Analizar dificultades sirve para…  
+ a) retrasar el proyecto b) anticipar riesgos c) escribir más código d) evitar tests → **b**
+10. La implementabilidad en Python se ve limitada por…  
+ a) sintaxis estricta b) tipado dinámico c) disponibilidad de librerías d) no hay límites → **c**
+
+---
+
+## Epígrafe 1.2 — Caracterización de elementos de programación en Python
+
+### 1.2.1 Conceptos clave
+
+| Concepto | Explicación |
+|---|---|
+| **Alto nivel** | El lenguaje abstrae el hardware; el programador trabaja con estructuras lógicas. |
+| **Compilado** | Traduce todo el código a binario antes de ejecutar (C, C++). |
+| **Interpretado** | Ejecuta instrucción a instrucción mediante un intérprete. |
+| **Bytecode** | Representación intermedia que ejecuta la VM de Python (CPython). |
+| **JIT** | Just-In-Time: compila en tiempo de ejecución (PyPy). |
+| **Bloque** | Conjunto de sentencias con el mismo nivel de indentación. |
+| **Scope** | Ámbito donde una variable es visible (local, global, nonlocal). |
+
+### 1.2.2 Explicación razonada
+
+Python es un lenguaje **de alto nivel, interpretado y con tipado dinámico fuerte**. Internamente:
+
+1. El código fuente `.py` se compila a **bytecode** `.pyc`.
+2. La **PVM** (Python Virtual Machine) ejecuta ese bytecode.
+3. Existen implementaciones alternativas: **CPython** (referencia), **PyPy** (JIT, más rápido), **Jython** (JVM), **IronPython** (.NET).
+
+**Diferencias entre versiones importantes**:
+- Python 2 vs 3: `print` era sentencia → ahora función; `/` era división entera → ahora real; strings Unicode por defecto.
+- 3.8: operador walrus `:=`.
+- 3.10: `match/case` (pattern matching).
+- 3.11: mejoras de rendimiento (~25%).
+- 3.12: type parameter syntax, f-strings mejoradas.
+
+**Bloques fundamentales de un programa Python**:
+- Módulos (`.py`)
+- Funciones (`def`)
+- Clases (`class`)
+- Expresiones y sentencias
+- Comentarios y docstrings
+
+**Errores frecuentes**:
+- Argumentos mutables por defecto (`def f(l=[])`).
+- Confundir `is` con `==`.
+- Modificar una lista mientras se itera.
+- Scope mal entendido (LEGB: Local → Enclosing → Global → Built-in).
+
+**Depuración**: `pdb`, `breakpoint()`, `logging`, `traceback`. Comparar código antes/después de depurar es una práctica profesional.
+
+### 1.2.3 Práctica guiada
+
+```python
+# 1) Diferencia compilado/interpretado (bytecode visible)
+import dis
+def suma(a, b): return a + b
+dis.dis(suma)   # muestra el bytecode
+
+# 2) Error frecuente: mutable por defecto
+def malo(lista=[]):
+    lista.append(1)
+    return lista
+
+def bueno(lista=None):
+    if lista is None:
+        lista = []
+    lista.append(1)
+    return lista
+
+print(malo(), malo())    # [1, 1]  ← sorpresa
+print(bueno(), bueno())  # [1] [1]
+
+# 3) Scope LEGB
+x = "global"
+def outer():
+    x = "enclosing"
+    def inner():
+        nonlocal x
+        x = "nonlocal"
+    inner()
+    return x
+print(outer())  # nonlocal
+
+# 4) Depuración con pdb
+def dividir(a, b):
+    breakpoint()   # pausa aquí
+    return a / b
+# dividir(10, 2)
+```
+
+### 1.2.4 Test
+
+1. Python es…  
+ a) compilado puro b) interpretado con bytecode c) ensamblador d) markup → **b**
+2. CPython implementa…  
+ a) JIT b) intérprete de bytecode c) compilador a C d) transpilador → **b**
+3. `print` en Python 2 era…  
+ a) función b) sentencia c) método d) clase → **b**
+4. El operador walrus `:=` aparece en…  
+ a) 3.6 b) 3.7 c) 3.8 d) 3.9 → **c**
+5. Un error frecuente es…  
+ a) usar type hints b) mutable por defecto c) usar logging d) usar venv → **b**
+6. `breakpoint()` invoca…  
+ a) print b) pdb c) logging d) sys.exit → **b**
+7. La indentación en Python es…  
+ a) decorativa b) sintáctica c) opcional d) solo en clases → **b**
+8. Un bloque en Python se delimita por…  
+ a) llaves b) begin/end c) indentación d) punto y coma → **c**
+9. `match` se introdujo en…  
+ a) 3.8 b) 3.9 c) 3.10 d) 3.11 → **c**
+10. La depuración sirve para…  
+ a) compilar b) localizar y corregir errores c) ofuscar d) empaquetar → **b**
+
+---
+
+## Epígrafe 1.3 — Evaluación de entornos de trabajo (IDE, frameworks)
+
+### 1.3.1 Conceptos clave
+
+| Herramienta | Tipo | Uso principal |
+|---|---|---|
+| **PyCharm** | IDE completo | Proyectos grandes, Django, refactor avanzado |
+| **VS Code** | Editor extensible | Polivalente, ligero, gran ecosistema |
+| **Spyder** | IDE científico | Data science, notebooks, variables |
+| **Thonny** | IDE didáctico | Aprendizaje, paso a paso |
+| **IDLE** | IDE básico | Enseñanza, scripts pequeños |
+| **Jupyter** | Notebook | Análisis exploratorio, docencia |
+| **Django** | Framework full-stack | Web con ORM, admin, auth |
+| **Flask** | Microframework | APIs, prototipos |
+| **FastAPI** | Framework ASGI | APIs modernas, async, tipado |
+| **Kivy/PyQt** | GUI | Aplicaciones de escritorio/móvil |
+
+### 1.3.2 Explicación razonada
+
+Un **IDE** integra editor, depurador, terminal, control de versiones, refactorización y autocompletado. La elección depende de:
+
+- **Tipo de proyecto**: web, datos, GUI, scripting.
+- **Rendimiento del equipo**: PyCharm es pesado; VS Code ligero.
+- **Ecosistema**: plugins, soporte de frameworks.
+- **Coste**: PyCharm Professional es de pago; VS Code gratuito.
+
+**Frameworks**: aportan estructura, convenciones y utilidades. Django sigue el patrón MVT (Model-View-Template) y trae "baterías incluidas". Flask es minimalista y flexible. FastAPI brilla en APIs asíncronas con validación automática.
+
+**IDLE**: entorno oficial, ideal para aprender porque muestra errores claros y permite ejecutar en Shell interactiva.
+
+### 1.3.3 Práctica guiada
+
+```bash
+# Crear entorno virtual (aislamiento de dependencias)
+python -m venv env
+source env/bin/activate        # Linux/macOS
+env\Scripts\activate           # Windows
+pip install flask fastapi pandas
+pip freeze > requirements.txt
+```
+
+```python
+# Flask mínimo
+from flask import Flask
+app = Flask(__name__)
+
+@app.route("/")
+def hola():
+    return "Hola desde Flask"
+
+# if __name__ == "__main__":
+#     app.run(debug=True)
+```
+
+```python
+# FastAPI mínimo (requiere uvicorn)
+from fastapi import FastAPI
+app = FastAPI()
+
+@app.get("/")
+def hola():
+    return {"msg": "Hola FastAPI"}
+# uvicorn modulo:app --reload
+```
+
+### 1.3.4 Test
+
+1. Un IDE incluye…  
+ a) solo editor b) editor+debug+refactor c) solo debug d) compilador → **b**
+2. Flask es un framework…  
+ a) full-stack b) micro c) ORM d) test → **b**
+3. Django destaca por…  
+ a) minimalismo b) baterías incluidas c) solo API d) GUI → **b**
+4. VS Code es…  
+ a) IDE puro b) editor extensible c) framework d) intérprete → **b**
+5. IDLE es útil para…  
+ a) producción b) aprendizaje c) big data d) web → **b**
+6. FastAPI se basa en…  
+ a) WSGI b) ASGI c) CGI d) FTP → **b**
+7. PyQt sirve para…  
+ a) web b) GUI c) datos d) test → **b**
+8. Un venv sirve para…  
+ a) compilar b) aislar dependencias c) depurar d) formatear → **b**
+9. Spyder está orientado a…  
+ a) web b) ciencia de datos c) GUI d) juegos → **b**
+10. Elegir IDE depende de…  
+ a) color b) tipo de proyecto c) SO d) RAM → **b**
+
+---
+
+## Epígrafe 1.4 — Uso del IDLE básico y Shell
+
+### 1.4.1 Conceptos clave
+
+- **Shell interactiva**: REPL (Read-Eval-Print Loop).
+- **Script**: archivo `.py` ejecutable.
+- **Indentación**: 4 espacios por convención PEP 8.
+- **Comentarios**: `#` línea, `"""..."""` docstring.
+- **Continuación de línea**: `\` explícita, o implícita dentro de `()`, `[]`, `{}`.
+
+### 1.4.2 Explicación razonada
+
+La Shell de Python es un **REPL**: lee, evalúa, imprime y repite. Es ideal para probar expresiones rápidas. Pero **no** para programas grandes.
+
+**Mala praxis**: escribir varias instrucciones en una línea con `;`. Aunque Python lo permite, reduce legibilidad y dificulta la depuración.
+
+**Sangrado**: en Python la indentación **no es estética**, es sintáctica. Define bloques. Un error de indentación produce `IndentationError`.
+
+**Comentarios**: `#` para una línea. `"""docstring"""` al inicio de módulo, clase o función para documentar. Se accede con `__doc__`.
+
+### 1.4.3 Práctica guiada
+
+```python
+# Shell interactiva
+>>> 2 + 3
+5
+>>> "a" * 3
+'aaa'
+
+# Multilínea con paréntesis
+total = (1 + 2 +
+         3 + 4)
+print(total)  # 10
+
+# Multilínea con backslash
+total = 1 + 2 + \
+        3 + 4
+
+# Comentarios y docstring
+def f(x):
+    """Devuelve el doble de x."""
+    return x * 2
+
+print(f.__doc__)
+```
+
+**Ejercicio**: escribir un script que pida dos números por consola y muestre su suma, usando `input()` y `print()`. Ejecutarlo en IDLE y en terminal.
+
+### 1.4.4 Test
+
+1. En shell, varias instrucciones en una línea se separan con…  
+ a) `,` b) `;` c) `:` d) `|` → **b**
+2. El sangrado en Python es…  
+ a) opcional b) obligatorio en bloques c) decorativo d) solo en funciones → **b**
+3. Un comentario de línea empieza por…  
+ a) `//` b) `#` c) `--` d) `/*` → **b**
+4. Un docstring se delimita con…  
+ a) `#` b) `'''` o `"""` c) `//` d) `<!--` → **b**
+5. La continuación de línea explícita usa…  
+ a) `;` b) `\` c) `:` d) `&` → **b**
+6. Escribir varias instrucciones en una línea es mala praxis porque…  
+ a) es más rápido b) reduce legibilidad c) ahorra memoria d) Python lo prohíbe → **b**
+7. IDLE permite…  
+ a) solo editar b) editar y ejecutar c) solo depurar d) solo test → **b**
+8. Un editor no integrado es…  
+ a) PyCharm b) VS Code c) Spyder d) Thonny → **b**
+9. El sangrado incorrecto produce…  
+ a) warning b) IndentationError c) SyntaxError d) nada → **b**
+10. Los comentarios sirven para…  
+ a) ejecutar b) documentar c) compilar d) ofuscar → **b**
+
+---
+
+## Epígrafe 1.5 — Sintaxis, operadores y tipos
+
+### 1.5.1 Conceptos clave
+
+| Categoría | Operadores |
+|---|---|
+| Aritméticos | `+ - * / // % **` |
+| Comparación | `== != < > <= >=` |
+| Lógicos | `and or not` |
+| Bit a bit | `& \| ^ ~ << >>` |
+| Asignación | `= += -= *= /= //= %= **= &= \|= ^= >>= <<=` |
+| Pertenencia | `in not in` |
+| Identidad | `is is not` |
+
+**Tipos simples**: `int`, `float`, `complex`, `bool`, `str`, `NoneType`.
+**Tipos complejos**: `list`, `tuple`, `set`, `dict`, `frozenset`, `bytes`, `bytearray`.
+
+### 1.5.2 Explicación razonada
+
+Python es de **tipado dinámico fuerte**: una variable no tiene tipo fijo, pero las operaciones entre tipos incompatibles lanzan `TypeError`. La coerción es explícita (`int("10")`), no implícita como en JS.
+
+**Precedencia** (de mayor a menor): `**` → unarios → `* / // %` → `+ -` → comparaciones → `not` → `and` → `or` → asignación.
+
+**Truthiness**: `0`, `0.0`, `""`, `[]`, `{}`, `()`, `set()`, `None`, `False` se evalúan como `False`.
+
+**Identidad vs igualdad**: `is` compara direcciones de memoria; `==` compara valores. Para enteros pequeños Python reutiliza objetos (`-5..256`), pero no para listas.
+
+### 1.5.3 Práctica guiada
+
+```python
+a, b = 5, 2
+print(a/b)    # 2.5
+print(a//b)   # 2
+print(a%b)    # 1
+print(a**b)   # 25
+print(a&b)    # 0  (101 & 010)
+print(a|b)    # 7
+print(a^b)    # 7
+print(~a)     # -6
+
+# Comparaciones encadenadas
+print(1 < 2 < 3)   # True
+
+# Pertenencia
+print("a" in "casa")   # True
+print(3 in [1,2,3])    # True
+
+# Identidad
+x = [1,2]; y = [1,2]; z = x
+print(x == y, x is y, x is z)  # True False True
+
+# Coerción
+print(int("10") + float("2.5"))  # 12.5
+print("a" * 3)                    # aaa
+print([1,2] + [3])                # [1,2,3]
+print({1,2} | {3})                # {1,2,3}
+
+# Tipos complejos
+d = {"a": 1, "b": 2}
+print(d["a"], d.get("c", 0))
+t = (1, 2, 3); print(t[0], t[-1])
+s = {1, 2, 3}; s.add(4); print(s)
+```
+
+### 1.5.4 Test
+
+1. `//` es…  
+ a) división real b) división entera c) módulo d) potencia → **b**
+2. `**` es…  
+ a) XOR b) potencia c) multiplicación d) módulo → **b**
+3. `is` compara…  
+ a) valor b) identidad c) tipo d) tamaño → **b**
+4. `in` es operador de…  
+ a) identidad b) pertenencia c) bits d) asignación → **b**
+5. `3 == 3.0` es…  
+ a) False b) True c) Error d) None → **b**
+6. `~5` en Python devuelve…  
+ a) -5 b) -6 c) 5 d) 6 → **b**
+7. `bool` es subclase de…  
+ a) float b) int c) str d) None → **b**
+8. `{1,2} | {3}` produce…  
+ a) dict b) set c) list d) tuple → **b**
+9. La precedencia más alta la tiene…  
+ a) `+` b) `**` c) `and` d) `=` → **b**
+10. `int("10") + 2.5` da…  
+ a) 12 b) 12.5 c) Error d) "102.5" → **b**
+
+---
+
+# MÓDULO 5099 — ESTRUCTURAS DE CONTROL EN PYTHON (5 ECTS, 40 h)
+
+## Epígrafe 2.1 — Identificación de estructuras de control
+
+### 2.1.1 Conceptos clave
+
+- **Secuencial**: instrucciones una tras otra.
+- **Selección**: `if/elif/else`, `match`.
+- **Repetición**: `for`, `while`.
+- **Condición**: expresión evaluada como booleana (truthiness).
+- **Sangrado**: delimita el bloque de cada estructura.
+
+### 2.1.2 Explicación razonada
+
+El **flujo de control** determina el orden de ejecución. Sin estructuras de control, un programa sería lineal. Con ellas podemos:
+
+- Tomar decisiones (`if`).
+- Repetir tareas (`for`, `while`).
+- Saltar (`break`, `continue`, `return`).
+
+**Diagramas de flujo**: cada estructura tiene su representación. Un `if` es un rombo con dos ramas. Un `while` es un rombo con una rama que vuelve atrás.
+
+**Importancia del sangrado**: en Python el bloque se define por indentación. Un `if` sin bloque indentado lanza `IndentationError`.
+
+### 2.1.3 Práctica guiada
+
+```python
+# Secuencial
+x = 1; y = 2; z = x + y
+
+# Selección
+if z > 2:
+    print("mayor")
+else:
+    print("menor")
+
+# Repetición
+for i in range(3):
+    print(i)
+
+i = 0
+while i < 3:
+    print(i); i += 1
+
+# Diagrama de flujo: dibujar el de un while que suma hasta 100
+```
+
+### 2.1.4 Test
+
+1. La estructura secuencial…  
+ a) decide b) repite c) ejecuta en orden d) anida → **c**
+2. `if` es estructura…  
+ a) secuencial b) selección c) repetición d) salto → **b**
+3. `while` es…  
+ a) selección b) repetición c) secuencial d) función → **b**
+4. El sangrado en control…  
+ a) opcional b) obligatorio c) decorativo d) solo en if → **b**
+5. Una condición en Python evalúa…  
+ a) solo bool b) truthiness c) solo int d) solo str → **b**
+6. `for` itera sobre…  
+ a) solo enteros b) iterables c) solo listas d) solo rangos → **b**
+7. Un diagrama de flujo de bucle tiene…  
+ a) solo rectángulos b) decisión de salida c) solo óvalos d) paralelogramos → **b**
+8. `else` en `for` se ejecuta…  
+ a) siempre b) si no hubo break c) si hubo break d) nunca → **b**
+9. `elif` equivale a…  
+ a) else if b) for c) while d) try → **a**
+10. La indentación en Python delimita…  
+ a) tipos b) bloques c) módulos d) paquetes → **b**
+
+---
+
+## Epígrafe 2.2 — Sentencias condicionales
+
+### 2.2.1 Conceptos clave
+
+- `if cond:` → ejecuta si verdadero.
+- `elif cond:` → evalúa si el anterior fue falso.
+- `else:` → si todos los anteriores falsos.
+- **Anidación**: `if` dentro de `if`.
+- **Ternario**: `a if cond else b`.
+- **match/case**: pattern matching estructural (3.10+).
+
+### 2.2.2 Explicación razonada
+
+Las sentencias condicionales permiten **tomar decisiones**. La evaluación es perezosa: en `A and B`, si `A` es falso, `B` no se evalúa (short-circuit). Esto es clave para evitar errores:
+
+```python
+if lista and lista[0] > 0:  # seguro: si lista vacía, no evalúa lista[0]
+    ...
+```
+
+**Anidación**: útil pero puede volverse ilegible. Se recomienda usar `elif` o funciones auxiliares.
+
+**match**: más potente que `if/elif` para estructuras. Permite desestructurar tuplas, listas, diccionarios y aplicar guardas (`case n if n > 0`).
+
+### 2.2.3 Práctica guiada
+
+```python
+# if/elif/else
+edad = 20
+if edad < 18:
+    print("menor")
+elif edad < 65:
+    print("adulto")
+else:
+    print("mayor")
+
+# Ternario
+print("par" if edad % 2 == 0 else "impar")
+
+# Anidación
+nota = 7
+if nota >= 5:
+    if nota >= 9:
+        print("sobresaliente")
+    else:
+        print("aprobado")
+else:
+    print("suspenso")
+
+# match (3.10+)
+match edad:
+    case n if n < 18:
+        print("menor")
+    case n if n < 65:
+        print("adulto")
+    case _:
+        print("mayor")
+
+# match con estructuras
+punto = (0, 5)
+match punto:
+    case (0, 0):
+        print("origen")
+    case (0, y):
+        print(f"eje Y en {y}")
+    case (x, 0):
+        print(f"eje X en {x}")
+    case (x, y):
+        print(f"punto ({x},{y})")
+```
+
+### 2.2.4 Test
+
+1. `elif` se evalúa…  
+ a) siempre b) si if es falso c) si if es verdadero d) nunca → **b**
+2. El ternario en Python es…  
+ a) `cond ? a : b` b) `a if cond else b` c) `if cond then a` d) `a unless b` → **b**
+3. `match` se introdujo en…  
+ a) 3.8 b) 3.9 c) 3.10 d) 3.11 → **c**
+4. Un `if` anidado…  
+ a) no existe b) if dentro de if c) solo en funciones d) solo en bucles → **b**
+5. `case _` en match es…  
+ a) error b) comodín c) variable d) None → **b**
+6. La indentación en `if`…  
+ a) opcional b) obligatoria c) decorativa d) solo si hay else → **b**
+7. `if 0:` se evalúa como…  
+ a) True b) False c) Error d) None → **b**
+8. `if []:` es…  
+ a) True b) False c) Error d) None → **b**
+9. `elif` puede haber…  
+ a) 0 o 1 b) 0 o varios c) solo 1 d) solo 2 → **b**
+10. `else` es…  
+ a) obligatorio b) opcional c) solo con elif d) solo en bucles → **b**
+
+---
+
+## Epígrafe 2.3 — Sentencias iterativas
+
+### 2.3.1 Conceptos clave
+
+- `for` itera sobre iterables.
+- `while` repite mientras condición.
+- `break` sale del bucle.
+- `continue` salta a la siguiente iteración.
+- `else` del bucle: se ejecuta si no hubo `break`.
+- Anidamiento de bucles.
+
+### 2.3.2 Explicación razonada
+
+**`for`** es un *foreach*: recorre cualquier iterable (`range`, `list`, `str`, `dict`, generadores). Internamente usa el protocolo de iteración (`__iter__`, `__next__`).
+
+**`while`** evalúa la condición antes de cada iteración. Si nunca se vuelve falsa, bucle infinito.
+
+**`break`/`continue`**: control fino del flujo. `else` en bucles es una peculiaridad de Python: se ejecuta si el bucle terminó sin `break`. Útil para búsquedas.
+
+**Anidamiento**: bucles dentro de bucles. Cuidado con complejidad O(n²).
+
+**Herramientas útiles**: `enumerate`, `zip`, `range` con paso, `reversed`, `sorted`.
+
+### 2.3.3 Práctica guiada
+
+```python
+# for con range
+for i in range(0, 10, 2):
+    print(i)  # 0 2 4 6 8
+
+# for sobre lista
+for x in [10, 20, 30]:
+    print(x)
+
+# enumerate
+for i, x in enumerate(["a","b","c"]):
+    print(i, x)
+
+# zip
+for a, b in zip([1,2,3], ["x","y","z"]):
+    print(a, b)
+
+# while con break
+i = 0
+while True:
+    if i >= 3:
+        break
+    print(i); i += 1
+
+# continue
+for i in range(5):
+    if i % 2 == 0:
+        continue
+    print(i)  # 1 3
+
+# for-else (búsqueda)
+buscado = 7
+for x in [1,2,3,4,5]:
+    if x == buscado:
+        print("encontrado"); break
+else:
+    print("no encontrado")
+
+# anidado: tabla de multiplicar
+for i in range(1, 4):
+    for j in range(1, 4):
+        print(i*j, end=" ")
+    print()
+```
+
+### 2.3.4 Test
+
+1. `range(5)` produce…  
+ a) 1..5 b) 0..4 c) 0..5 d) 1..4 → **b**
+2. `break`…  
+ a) salta iteración b) sale del bucle c) reinicia d) nada → **b**
+3. `continue`…  
+ a) sale b) salta a siguiente iteración c) reinicia d) nada → **b**
+4. `for...else` se ejecuta…  
+ a) siempre b) sin break c) con break d) nunca → **b**
+5. `while True` con break es…  
+ a) error b) patrón común c) infinito sin salida d) ilegal → **b**
+6. `enumerate` devuelve…  
+ a) solo valores b) índice y valor c) solo índice d) claves → **b**
+7. `zip` combina…  
+ a) dicts b) iterables c) sets d) strings → **b**
+8. Un bucle anidado tiene…  
+ a) un solo nivel b) varios niveles c) solo while d) solo for → **b**
+9. `for i in "abc"` itera…  
+ a) error b) caracteres c) palabras d) bytes → **b**
+10. `while` evalúa la condición…  
+ a) nunca b) antes de cada iteración c) después d) solo una vez → **b**
+
+---
+
+## Epígrafe 2.4 — Funciones
+
+### 2.4.1 Conceptos clave
+
+- **Built-in**: `len`, `sum`, `min`, `max`, `map`, `filter`, `sorted`, `zip`, `enumerate`.
+- **Definidas**: `def nombre(params): ...`.
+- **Argumentos**: posicionales, por nombre, por defecto, `*args`, `**kwargs`.
+- **Retorno**: `return`, múltiple (tupla).
+- **Lambda**: función anónima de una expresión.
+- **Recursividad**: función que se llama a sí misma con caso base.
+
+### 2.4.2 Explicación razonada
+
+Las funciones **encapsulan lógica reutilizable**. Ventajas: modularidad, testabilidad, legibilidad, evitan repetición (DRY).
+
+**Paso de argumentos**: en Python se pasa **referencia al objeto**. Si el objeto es mutable y se modifica dentro, el cambio se refleja fuera.
+
+**Ámbitos**: LEGB. Una función puede acceder a variables globales, pero para modificarlas necesita `global`. Para variables de la función envolvente, `nonlocal`.
+
+**Lambda**: útil para `key` en `sorted`, `map`, `filter`. No admite sentencias, solo expresiones.
+
+**Recursividad**: elegante para problemas jerárquicos (factorial, Fibonacci, árboles). Siempre debe tener caso base y acercarse a él. Python tiene límite de recursión (~1000).
+
+### 2.4.3 Práctica guiada
+
+```python
+# Built-in
+print(len("hola"), sum([1,2,3]), max([1,5,2]))
+print(list(map(lambda x: x*2, [1,2,3])))
+print(list(filter(lambda x: x%2==0, range(10))))
+print(sorted([3,1,2], key=lambda x: -x))
+
+# Definida por usuario
+def saludar(nombre, saludo="Hola"):
+    return f"{saludo}, {nombre}"
+
+print(saludar("Ana"))
+print(saludar("Luis", saludo="Buenos días"))
+
+# *args y **kwargs
+def suma(*args):
+    return sum(args)
+print(suma(1,2,3,4))
+
+def config(**kwargs):
+    return kwargs
+print(config(a=1, b=2))
+
+# Retorno múltiple
+def min_max(lista):
+    return min(lista), max(lista)
+lo, hi = min_max([3,1,4,1,5])
+
+# Lambda
+doble = lambda x: x*2
+print(doble(5))
+
+# Recursividad
+def fact(n):
+    return 1 if n <= 1 else n * fact(n-1)
+print(fact(5))  # 120
+
+def fib(n):
+    return n if n < 2 else fib(n-1) + fib(n-2)
+print([fib(i) for i in range(10)])
+```
+
+### 2.4.4 Test
+
+1. `lambda` es…  
+ a) clase b) función anónima c) módulo d) decorador → **b**
+2. `map` devuelve…  
+ a) lista b) iterador c) dict d) set → **b**
+3. `filter`…  
+ a) transforma b) filtra c) ordena d) reduce → **b**
+4. Recursividad necesita…  
+ a) while b) caso base c) for d) break → **b**
+5. `def` define…  
+ a) clase b) función c) módulo d) variable → **b**
+6. `return` sin valor devuelve…  
+ a) 0 b) None c) "" d) error → **b**
+7. `sorted` devuelve…  
+ a) None b) nueva lista c) modifica in-place d) set → **b**
+8. `*args` recoge…  
+ a) dict b) tupla de posicionales c) solo kwargs d) nada → **b**
+9. `**kwargs` recoge…  
+ a) tupla b) dict c) lista d) set → **b**
+10. Una función sin return devuelve…  
+ a) 0 b) None c) error d) "" → **b**
+
+---
+
+## Epígrafe 2.5 — Arquitectura de código robusto y excepciones
+
+### 2.5.1 Conceptos clave
+
+- **Error de sintaxis**: no se puede ni compilar.
+- **Excepción**: error en tiempo de ejecución, capturable.
+- `try/except/else/finally`.
+- **Excepciones personalizadas**: heredan de `Exception`.
+- **Depuración**: `pdb`, `logging`, `traceback`.
+- **Código robusto**: validación, manejo de errores, logging.
+
+### 2.5.2 Explicación razonada
+
+Un **error de sintaxis** lo detecta el intérprete antes de ejecutar (paréntesis sin cerrar, `if` sin `:`). Una **excepción** ocurre durante la ejecución (`ZeroDivisionError`, `FileNotFoundError`, `ValueError`).
+
+**Bloque try**:
+- `try`: código que puede fallar.
+- `except`: captura y maneja.
+- `else`: se ejecuta si no hubo excepción.
+- `finally`: se ejecuta siempre (limpieza).
+
+**Jerarquía**: `BaseException` → `Exception` → `ValueError`, `TypeError`, etc. `KeyboardInterrupt` y `SystemExit` heredan de `BaseException`, no de `Exception` (no capturar sin querer).
+
+**Buenas prácticas**:
+- Capturar excepciones específicas, no `except:` genérico.
+- Usar `logging` en vez de `print` para errores.
+- No silenciar excepciones.
+- Usar `assert` solo para depuración, no en producción.
+
+### 2.5.3 Práctica guiada
+
+```python
+import logging
+logging.basicConfig(level=logging.INFO)
+
+# Captura específica
+try:
+    x = int("a")
+except ValueError as e:
+    logging.error("Conversión fallida: %s", e)
+else:
+    logging.info("Conversión OK: %s", x)
+finally:
+    logging.info("Fin del intento")
+
+# Múltiples excepciones
+try:
+    with open("no_existe.txt") as f:
+        data = f.read()
+except FileNotFoundError:
+    logging.warning("Fichero no encontrado")
+except PermissionError:
+    logging.error("Sin permisos")
+
+# Excepción personalizada
+class SaldoInsuficiente(Exception):
+    def __init__(self, saldo, importe):
+        super().__init__(f"Saldo {saldo} < importe {importe}")
+        self.saldo = saldo
+        self.importe = importe
+
+def retirar(saldo, importe):
+    if importe > saldo:
+        raise SaldoInsuficiente(saldo, importe)
+    return saldo - importe
+
+try:
+    retirar(100, 200)
+except SaldoInsuficiente as e:
+    print(e)
+
+# traceback
+import traceback
+try:
+    1/0
+except ZeroDivisionError:
+    traceback.print_exc()
+```
+
+### 2.5.4 Test
+
+1. `ValueError` es…  
+ a) error sintaxis b) excepción c) warning d) None → **b**
+2. `finally` se ejecuta…  
+ a) solo si error b) siempre c) solo si no error d) nunca → **b**
+3. `else` en try se ejecuta…  
+ a) siempre b) sin excepción c) con excepción d) nunca → **b**
+4. Una excepción personalizada hereda de…  
+ a) object b) Exception c) BaseException d) Error → **b**
+5. `raise` sirve para…  
+ a) capturar b) lanzar c) ignorar d) log → **b**
+6. `except (A, B)` captura…  
+ a) solo A b) A o B c) A y B d) ninguna → **b**
+7. Un error de sintaxis…  
+ a) se captura con try b) no se captura c) es warning d) es None → **b**
+8. `logging` sirve para…  
+ a) compilar b) registrar eventos c) test d) GUI → **b**
+9. `assert` sirve para…  
+ a) producción b) depuración c) GUI d) web → **b**
+10. `KeyboardInterrupt` hereda de…  
+ a) Exception b) BaseException c) Error d) object → **b**
+
+---
+
+# MÓDULO 5100 — PROGRAMACIÓN ORIENTADA A OBJETOS (9 ECTS, 75 h)
+
+## Epígrafe 3.1 — Caracterización de la POO
+
+### 3.1.1 Conceptos clave
+
+| Concepto | Definición |
+|---|---|
+| **Objeto** | Instancia de una clase con estado y comportamiento. |
+| **Clase** | Plantilla que define atributos y métodos. |
+| **Atributo** | Dato del objeto o de la clase. |
+| **Método** | Función asociada a la clase. |
+| **Constructor** | `__init__`, inicializa la instancia. |
+| **Destructor** | `__del__`, libera recursos. |
+| **Ortogonalidad** | Métodos independientes entre sí. |
+| **Tipos de métodos** | Instancia, clase (`@classmethod`), estático (`@staticmethod`). |
+
+### 3.1.2 Explicación razonada
+
+La POO modela el mundo real mediante **objetos** que tienen **estado** (atributos) y **comportamiento** (métodos). Una **clase** es el molde; una **instancia** es el objeto concreto.
+
+**`__init__`**: se llama al crear la instancia. `self` es la referencia al objeto. Los atributos de instancia se definen aquí.
+
+**`__del__`**: se llama cuando el objeto va a ser destruido (recolección de basura). No se garantiza su ejecución inmediata.
+
+**Métodos**:
+- De instancia: reciben `self`.
+- De clase: reciben `cls`, se llaman sobre la clase.
+- Estáticos: no reciben ni `self` ni `cls`, son funciones normales dentro de la clase.
+
+**Ortogonalidad**: cada método debe hacer una cosa y no depender de efectos colaterales de otros. Favorece la mantenibilidad.
+
+### 3.1.3 Práctica guiada
+
+```python
+class Persona:
+    especie = "humano"   # atributo de clase
+
+    def __init__(self, nombre, edad):
+        self.nombre = nombre   # atributo de instancia
+        self.edad = edad
+
+    def saludar(self):
+        return f"Hola, soy {self.nombre}"
+
+    @classmethod
+    def especie_actual(cls):
+        return cls.especie
+
+    @staticmethod
+    def mayor_de_edad(edad):
+        return edad >= 18
+
+    def __del__(self):
+        print(f"Adiós {self.nombre}")
+
+p = Persona("Ana", 30)
+print(p.saludar())
+print(Persona.especie_actual())
+print(Persona.mayor_de_edad(20))
+del p
+```
+
+### 3.1.4 Test
+
+1. Una clase es…  
+ a) instancia b) plantilla c) método d) atributo → **b**
+2. `__init__` es…  
+ a) destructor b) constructor c) método estático d) propiedad → **b**
+3. `__del__` es…  
+ a) constructor b) destructor c) estático d) clase → **b**
+4. `self` representa…  
+ a) clase b) instancia c) módulo d) None → **b**
+5. Un atributo de clase…  
+ a) por instancia b) compartido c) privado d) estático → **b**
+6. `@staticmethod`…  
+ a) recibe self b) no recibe self ni cls c) recibe cls d) es abstracto → **b**
+7. `@classmethod` recibe…  
+ a) self b) cls c) nada d) object → **b**
+8. Ortogonalidad de métodos significa…  
+ a) mismos nombres b) independencia funcional c) herencia d) polimorfismo → **b**
+9. Una instancia se crea…  
+ a) `Clase` b) `Clase()` c) `new Clase` d) `Clase.new` → **b**
+10. Los atributos son…  
+ a) funciones b) datos del objeto c) módulos d) clases → **b**
+
+---
+
+## Epígrafe 3.2 — Aplicación de POO
+
+### 3.2.1 Conceptos clave
+
+- **Herencia**: `class B(A)`.
+- **Herencia múltiple**: `class C(A, B)`.
+- **Polimorfismo**: misma interfaz, distinto comportamiento.
+- **Encapsulación**: `_protegido`, `__privado` (name mangling).
+- **`super()`**: llama al padre.
+- **Módulos y paquetes**: `.py` y carpetas con `__init__.py`.
+
+### 3.2.2 Explicación razonada
+
+**Herencia** permite reutilizar código. La subclase hereda atributos y métodos, y puede sobrescribirlos. `super()` invoca al padre para no duplicar lógica.
+
+**Polimorfismo**: distintas clases implementan el mismo método. El código cliente trabaja con la interfaz, no con la implementación.
+
+**Encapsulación**: en Python no hay privacidad real. `_x` es convención; `__x` aplica *name mangling* (`_Clase__x`). El objetivo es indicar intención y evitar colisiones.
+
+**Módulos**: un archivo `.py` es un módulo. Un paquete es una carpeta con `__init__.py`. Se importan con `import`, `from ... import ...`.
+
+### 3.2.3 Práctica guiada
+
+```python
+# Herencia
+class Animal:
+    def __init__(self, nombre):
+        self.nombre = nombre
+    def hablar(self):
+        return "..."
+
+class Perro(Animal):
+    def hablar(self):
+        return "guau"
+
+class Gato(Animal):
+    def hablar(self):
+        return "miau"
+
+for a in [Perro("Rex"), Gato("Misu")]:
+    print(a.nombre, a.hablar())   # polimorfismo
+
+# super()
+class Vehiculo:
+    def __init__(self, marca):
+        self.marca = marca
+
+class Coche(Vehiculo):
+    def __init__(self, marca, puertas):
+        super().__init__(marca)
+        self.puertas = puertas
+
+c = Coche("Seat", 5)
+print(c.marca, c.puertas)
+
+# Encapsulación
+class Cuenta:
+    def __init__(self):
+        self.__saldo = 0
+    def ingreso(self, x):
+        self.__saldo += x
+    def saldo(self):
+        return self.__saldo
+
+cu = Cuenta(); cu.ingreso(100); print(cu.saldo())
+# print(cu.__saldo)  # AttributeError
+
+# Módulos y paquetes
+# mi_paquete/__init__.py
+# mi_paquete/util.py
+# from mi_paquete.util import funcion
+```
+
+### 3.2.4 Test
+
+1. Herencia se define…  
+ a) `class B(A)` b) `class B extends A` c) `class B:A` d) `class B->A` → **a**
+2. Polimorfismo permite…  
+ a) misma interfaz distinto comportamiento b) ocultar datos c) heredar d) empaquetar → **a**
+3. `__x` es…  
+ a) público b) name-mangled c) constante d) static → **b**
+4. `_x` es…  
+ a) privado real b) convención protegido c) static d) clase → **b**
+5. `super()` sirve para…  
+ a) crear b) llamar a la clase padre c) destruir d) importar → **b**
+6. Un módulo es…  
+ a) archivo .py b) carpeta c) clase d) función → **a**
+7. Un paquete es…  
+ a) archivo .py b) carpeta con __init__.py c) clase d) módulo → **b**
+8. Herencia múltiple…  
+ a) no existe b) `class C(A,B)` c) solo Java d) solo con mixins → **b**
+9. Encapsulación busca…  
+ a) ocultar estado b) heredar c) polimorfismo d) empaquetar → **a**
+10. Un destructor se invoca…  
+ a) al crear b) al liberar c) nunca d) manualmente → **b**
+
+---
+
+## Epígrafe 3.3 — Gestión de ficheros
+
+### 3.3.1 Conceptos clave
+
+- `open(ruta, modo)`: modos `r`, `w`, `a`, `x`, `b`, `t`, `+`.
+- Métodos: `read`, `readline`, `readlines`, `write`, `writelines`, `seek`, `tell`, `close`.
+- Propiedades: `name`, `mode`, `closed`.
+- `with`: cierre automático.
+- JSON: `json.dump`, `json.load`.
+- Serialización: `str`, `repr`, `pickle`.
+
+### 3.3.2 Explicación razonada
+
+La gestión de ficheros es esencial para persistencia. `open` devuelve un objeto `File`. El modo determina el comportamiento:
+
+- `r`: lectura (error si no existe).
+- `w`: escritura (sobrescribe).
+- `a`: append (añade).
+- `x`: creación exclusiva.
+- `b`: binario.
+- `+`: lectura y escritura.
+
+**`with`**: context manager que garantiza el cierre incluso si hay excepción. Es la forma recomendada.
+
+**JSON**: formato de intercambio. `json.dump(obj, f)` escribe; `json.load(f)` lee. Los objetos Python deben ser serializables (dict, list, str, int, float, bool, None).
+
+**Pickle**: serializa objetos Python arbitrarios, pero es inseguro si la fuente no es confiable.
+
+### 3.3.3 Práctica guiada
+
+```python
+# Escritura y lectura
+with open("datos.txt", "w", encoding="utf-8") as f:
+    f.write("línea 1\n")
+    f.writelines(["línea 2\n", "línea 3\n"])
+
+with open("datos.txt", "r", encoding="utf-8") as f:
+    print(f.read())
+
+# Lectura línea a línea
+with open("datos.txt") as f:
+    for linea in f:
+        print(linea.strip())
+
+# seek y tell
+with open("datos.txt") as f:
+    print(f.tell())   # 0
+    f.seek(7)
+    print(f.read(5))
+
+# JSON
+import json
+datos = {"nombre": "Ana", "edad": 30, "hobbies": ["leer", "correr"]}
+with open("datos.json", "w") as f:
+    json.dump(datos, f, indent=2)
+
+with open("datos.json") as f:
+    d = json.load(f)
+print(d["nombre"], d["hobbies"][0])
+
+# pickle
+import pickle
+with open("datos.pkl", "wb") as f:
+    pickle.dump(datos, f)
+with open("datos.pkl", "rb") as f:
+    print(pickle.load(f))
+```
+
+### 3.3.4 Test
+
+1. `with open(...)` garantiza…  
+ a) velocidad b) cierre c) formato d) nada → **b**
+2. Modo `a`…  
+ a) sobrescribe b) añade c) lee d) binario → **b**
+3. `readlines` devuelve…  
+ a) str b) lista c) dict d) set → **b**
+4. `seek(0)`…  
+ a) cierra b) va al inicio c) final d) borra → **b**
+5. `tell` devuelve…  
+ a) tamaño b) posición c) nombre d) modo → **b**
+6. `json.dump` escribe…  
+ a) str b) objeto a fichero c) lista d) dict a str → **b**
+7. `pickle` serializa…  
+ a) solo str b) objetos Python c) JSON d) CSV → **b**
+8. `f.closed` indica…  
+ a) modo b) si está cerrado c) nombre d) tamaño → **b**
+9. `writelines` escribe…  
+ a) una línea b) iterable de líneas c) dict d) set → **b**
+10. `open(..., "rb")` abre…  
+ a) texto b) binario c) append d) write → **b**
+
+---
+
+## Epígrafe 3.4 — Conexión y gestión de bases de datos
+
+### 3.4.1 Conceptos clave
+
+- `sqlite3`: BD embebida, sin servidor.
+- `connect`, `cursor`, `execute`, `executemany`, `commit`, `rollback`, `close`.
+- SQL: `CREATE`, `INSERT`, `SELECT`, `UPDATE`, `DELETE`.
+- Web: Flask + SQLite.
+- Seguridad: SQL injection, parametrización, HTTPS, validación.
+
+### 3.4.2 Explicación razonada
+
+**SQLite** es ideal para prototipos y aplicaciones pequeñas. No requiere servidor. Para producción se usan PostgreSQL, MySQL, etc., con librerías como `psycopg2`, `mysql-connector`, o ORMs como SQLAlchemy.
+
+**Flujo típico**:
+1. `con = sqlite3.connect("bd.db")`
+2. `cur = con.cursor()`
+3. `cur.execute("SQL", params)`
+4. `con.commit()`
+5. `con.close()`
+
+**Parametrización**: SIEMPRE usar `?` o `:nombre` para evitar **SQL injection**. Nunca concatenar strings.
+
+**Web**: Flask recibe peticiones HTTP. Se conecta a la BD, ejecuta consultas y devuelve respuestas. Para seguridad: HTTPS, validación de entrada, escape de salida, sesiones seguras, CSRF.
+
+### 3.4.3 Práctica guiada
+
+```python
+import sqlite3
+
+# Crear BD y tabla
+con = sqlite3.connect(":memory:")
+cur = con.cursor()
+cur.execute("""
+    CREATE TABLE usuarios (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre TEXT NOT NULL,
+        email TEXT UNIQUE
+    )
+""")
+
+# Insertar (parametrizado)
+cur.execute("INSERT INTO usuarios (nombre, email) VALUES (?, ?)", ("Ana", "ana@x.com"))
+cur.executemany("INSERT INTO usuarios (nombre, email) VALUES (?, ?)",
+                [("Luis", "luis@x.com"), ("Eva", "eva@x.com")])
+con.commit()
+
+# Consultar
+for row in cur.execute("SELECT * FROM usuarios"):
+    print(row)
+
+# Actualizar
+cur.execute("UPDATE usuarios SET email=? WHERE nombre=?", ("nuevo@x.com", "Ana"))
+con.commit()
+
+# Eliminar
+cur.execute("DELETE FROM usuarios WHERE nombre=?", ("Luis",))
+con.commit()
+
+# Rollback
+try:
+    cur.execute("INSERT INTO usuarios (nombre, email) VALUES (?, ?)", ("X", "ana@x.com"))
+    con.commit()
+except sqlite3.IntegrityError:
+    con.rollback()
+    print("Email duplicado, rollback")
+
+con.close()
+```
+
+```python
+# Flask + SQLite
+from flask import Flask, request, render_template_string
+import sqlite3
+
+app = Flask(__name__)
+
+def get_db():
+    con = sqlite3.connect("app.db")
+    con.row_factory = sqlite3.Row
+    return con
+
+@app.route("/add", methods=["GET", "POST"])
+def add():
+    if request.method == "POST":
+        nombre = request.form["nombre"]
+        con = get_db()
+        con.execute("INSERT INTO usuarios (nombre) VALUES (?)", (nombre,))
+        con.commit()
+        return "Añadido"
+    return render_template_string("""
+        <form method="post">
+            <input name="nombre">
+            <button>Enviar</button>
+        </form>
+    """)
+```
+
+### 3.4.4 Test
+
+1. `sqlite3.connect` devuelve…  
+ a) cursor b) conexión c) tabla d) dict → **b**
+2. `cursor.execute`…  
+ a) cierra b) ejecuta SQL c) conecta d) commitea → **b**
+3. `commit`…  
+ a) revierte b) confirma c) cierra d) abre → **b**
+4. Parametrizar evita…  
+ a) lentitud b) SQL injection c) errores d) nada → **b**
+5. `?` en SQLite es…  
+ a) comodín b) placeholder c) error d) comentario → **b**
+6. Flask es…  
+ a) ORM b) microframework c) BD d) IDE → **b**
+7. `request.form` obtiene…  
+ a) GET b) POST c) headers d) cookies → **b**
+8. HTTPS aporta…  
+ a) velocidad b) cifrado c) formato d) ORM → **b**
+9. Borrar en bloque usa…  
+ a) SELECT b) DELETE c) UPDATE d) INSERT → **b**
+10. `fetchall` devuelve…  
+ a) int b) lista de tuplas c) dict d) str → **b**
+
+---
+
+## Epígrafe 3.5 — Programas en Python para problemas reales
+
+### 3.5.1 Conceptos clave
+
+- **Documentación del problema**: requisitos, entradas, salidas, restricciones.
+- **Propuesta de soluciones**: alternativas con pros/contras.
+- **Selección**: según contexto y coste.
+- **Implementación**: código documentado.
+- **Depuración**: `pdb`, `logging`.
+- **Pruebas**: unitarias, integración, sistema.
+- **Verificación**: resultados esperados.
+- **Documentación de cambios**: trazabilidad.
+
+### 3.5.2 Explicación razonada
+
+Un proyecto real sigue un ciclo de vida: **análisis → diseño → implementación → pruebas → despliegue → mantenimiento**. La documentación rigurosa evita malentendidos. Las pruebas deben cubrir casos normales, límite y erróneos.
+
+**Depurador**: `pdb` permite inspeccionar variables, poner breakpoints, ejecutar paso a paso. `logging` registra eventos sin detener el programa.
+
+**Pruebas**: `unittest`, `pytest`. Se escriben casos que verifican comportamiento. Se documentan resultados. Si algo falla, se corrige y se documenta el cambio.
+
+### 3.5.3 Práctica guiada
+
+```python
+# Problema: contar palabras de un fichero
+# Documentación: entrada=fichero de texto, salida=número de palabras
+# Solución: leer, split, len
+
+def contar_palabras(path):
+    """Devuelve el número de palabras del fichero."""
+    with open(path, encoding="utf-8") as f:
+        return len(f.read().split())
+
+# Pruebas
+import tempfile, os
+with tempfile.NamedTemporaryFile("w", delete=False, suffix=".txt") as tmp:
+    tmp.write("hola mundo python")
+    name = tmp.name
+
+assert contar_palabras(name) == 3
+os.unlink(name)
+print("Prueba OK")
+
+# Depuración con pdb
+# python -m pdb script.py
+```
+
+### 3.5.4 Test
+
+1. Documentar el problema sirve para…  
+ a) retrasar b) clarificar requisitos c) ofuscar d) nada → **b**
+2. El depurador sirve para…  
+ a) compilar b) inspeccionar ejecución c) formatear d) empaquetar → **b**
+3. Las pruebas deben…  
+ a) ser aleatorias b) cubrir partes c) solo una d) ninguna → **b**
+4. Verificar resultados implica…  
+ a) confiar b) comprobar c) ignorar d) borrar → **b**
+5. Cambios deben…  
+ a) ocultarse b) documentarse c) ignorarse d) borrarse → **b**
+6. Coste de implementación es…  
+ a) irrelevante b) criterio de selección c) siempre igual d) nulo → **b**
+7. Probar el conjunto…  
+ a) no necesario b) recomendable c) prohibido d) opcional → **b**
+8. `assert` sirve para…  
+ a) producción b) pruebas c) GUI d) web → **b**
+9. Documentar cambios ayuda a…  
+ a) olvidar b) trazabilidad c) ofuscar d) nada → **b**
+10. Elegir solución depende de…  
+ a) moda b) contexto y coste c) azar d) nadie → **b**
+
+---
+
+# MÓDULO 5101 — ANÁLISIS DE DATOS CON PYTHON (9 ECTS, 75 h)
+
+## Epígrafe 4.1 — Manejo, limpieza y normalización de datos
+
+### 4.1.1 Conceptos clave
+
+- **pandas**: DataFrame, Series.
+- **numpy**: arrays, vectorización.
+- **Lectura**: `read_csv`, `read_excel`, `read_sql`, `read_json`.
+- **Escritura**: `to_csv`, `to_excel`, `to_sql`.
+- **CRUD**: selección, actualización, adición, eliminación.
+- **Verificación**: `head`, `info`, `describe`, `isna`.
+
+### 4.1.2 Explicación razonada
+
+**pandas** es la librería central para datos tabulares. Un `DataFrame` es una tabla con índices y columnas tipadas. Una `Series` es una columna.
+
+**Lectura**: pandas infiere tipos, pero a veces hay que forzarlos (`dtype`, `parse_dates`). Maneja valores nulos (`NaN`).
+
+**Escritura**: `to_csv`, `to_excel`, `to_sql`. Cuidado con índices y codificación.
+
+**CRUD**:
+- Selección: `df[col]`, `df.loc[]`, `df.iloc[]`, `df.query()`.
+- Actualización: `df.loc[cond, col] = valor`.
+- Adición: `df.append` (obsoleto) → `pd.concat`.
+- Eliminación: `df.drop`, `df.dropna`.
+
+**Verificación intermedia**: siempre inspeccionar tras cada operación.
+
+### 4.1.3 Práctica guiada
+
+```python
+import pandas as pd
+import numpy as np
+
+# Crear DataFrame
+df = pd.DataFrame({
+    "nombre": ["Ana", "Luis", "Eva", None],
+    "edad": [30, 25, np.nan, 40],
+    "ciudad": ["Madrid", "Barcelona", "Madrid", "Sevilla"]
+})
+
+# Inspección
+print(df.head())
+print(df.info())
+print(df.describe())
+print(df.isna().sum())
+
+# Selección
+print(df["nombre"])
+print(df.loc[df["edad"] > 28])
+print(df.iloc[0:2])
+
+# Actualización
+df.loc[df["nombre"] == "Ana", "edad"] = 31
+
+# Adición de columna
+df["mayor"] = df["edad"] >= 18
+
+# Eliminación
+df = df.dropna(subset=["nombre"])
+df = df.drop(columns=["mayor"])
+
+# Exportar
+df.to_csv("datos.csv", index=False)
+df.to_excel("datos.xlsx", index=False)
+df2 = pd.read_csv("datos.csv")
+print(df2)
+```
+
+### 4.1.4 Test
+
+1. `pandas` se importa como…  
+ a) `import pd` b) `import pandas as pd` c) `from pandas import *` d) `import pandas` → **b**
+2. `read_csv` devuelve…  
+ a) dict b) DataFrame c) list d) Series → **b**
+3. `to_excel` requiere…  
+ a) nada b) openpyxl c) numpy d) sqlalchemy → **b**
+4. `read_sql` usa…  
+ a) cursor b) conexión c) ORM d) todas → **d**
+5. `df.head()` muestra…  
+ a) todo b) primeras filas c) últimas d) columnas → **b**
+6. `dtypes` muestra…  
+ a) valores b) tipos c) columnas d) índices → **b**
+7. `describe` resume…  
+ a) todo b) estadísticas c) tipos d) índices → **b**
+8. `drop` sirve para…  
+ a) añadir b) eliminar c) ordenar d) agrupar → **b**
+9. `isna().sum()` cuenta…  
+ a) filas b) nulos por columna c) columnas d) tipos → **b**
+10. `loc` selecciona por…  
+ a) posición b) etiqueta c) tipo d) índice numérico → **b**
+
+---
+
+## Epígrafe 4.2 — Limpieza y estandarización de datos
+
+### 4.2.1 Conceptos clave
+
+- **Análisis de datos**: tipos, nulos, outliers, duplicados.
+- **Normalización**: escalar a rango [0,1].
+- **Estandarización**: media 0, desviación 1.
+- **Agrupaciones**: `cut`, `qcut`, `groupby`.
+- **Variables categóricas → numéricas**: `map`, `get_dummies`, `LabelEncoder`, `OneHotEncoder`.
+
+### 4.2.2 Explicación razonada
+
+**Limpieza**: eliminar duplicados, tratar nulos (imputar o eliminar), corregir tipos, detectar outliers.
+
+**Normalización vs estandarización**:
+- Normalización: `(x - min) / (max - min)` → [0,1]. Útil cuando hay que comparar magnitudes.
+- Estandarización: `(x - mean) / std` → media 0, std 1. Útil para algoritmos que asumen distribución normal (SVM, regresión).
+
+**Agrupaciones**: `pd.cut` divide en intervalos de igual amplitud; `pd.qcut` en cuantiles. `groupby` agrupa por categoría y aplica funciones.
+
+**Categóricas → numéricas**:
+- `map`: diccionario manual.
+- `get_dummies`: one-hot encoding.
+- `LabelEncoder`: ordinal.
+- `OneHotEncoder`: one-hot para múltiples columnas.
+
+### 4.2.3 Práctica guiada
+
+```python
+import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({
+    "edad": [20, 30, np.nan, 40, 25, 30],
+    "ciudad": ["Madrid", "Barcelona", "Madrid", "Sevilla", "Madrid", "Barcelona"],
+    "ingreso": [2000, 3000, 2500, 5000, 2200, 3100]
+})
+
+# Duplicados
+print(df.duplicated().sum())
+df = df.drop_duplicates()
+
+# Nulos
+df["edad"] = df["edad"].fillna(df["edad"].mean())
+
+# Normalización
+df["ingreso_norm"] = (df["ingreso"] - df["ingreso"].min()) / (df["ingreso"].max() - df["ingreso"].min())
+
+# Estandarización
+df["ingreso_std"] = (df["ingreso"] - df["ingreso"].mean()) / df["ingreso"].std()
+
+# Agrupaciones por intervalos
+df["grupo_edad"] = pd.cut(df["edad"], bins=[0, 25, 35, 100], labels=["joven", "adulto", "mayor"])
+print(df.groupby("grupo_edad")["ingreso"].mean())
+
+# Categóricas → numéricas
+df["ciudad_num"] = df["ciudad"].map({"Madrid": 0, "Barcelona": 1, "Sevilla": 2})
+df = pd.get_dummies(df, columns=["ciudad"], prefix="ciudad")
+print(df)
+```
+
+### 4.2.4 Test
+
+1. `fillna` sirve para…  
+ a) eliminar b) imputar c) ordenar d) agrupar → **b**
+2. `drop_duplicates`…  
+ a) añade b) elimina duplicados c) ordena d) agrupa → **b**
+3. Normalizar escala a…  
+ a) [0,1] b) [-1,1] c) media 0 d) std 1 → **a**
+4. Estandarizar busca…  
+ a) [0,1] b) media 0, std 1 c) min 0 d) max 1 → **b**
+5. `qcut` divide en…  
+ a) intervalos iguales b) cuantiles c) bins manuales d) nada → **b**
+6. `get_dummies` hace…  
+ a) label encoding b) one-hot c) ordinal d) nada → **b**
+7. `groupby` sirve para…  
+ a) filtrar b) agrupar y agregar c) ordenar d) unir → **b**
+8. `map` con dict hace…  
+ a) one-hot b) sustitución c) agrupación d) nada → **b**
+9. Un outlier es…  
+ a) valor típico b) valor atípico c) nulo d) duplicado → **b**
+10. `isna` detecta…  
+ a) duplicados b) nulos c) tipos d) outliers → **b**
+
+---
+
+## Epígrafe 4.3 — Análisis exploratorio de datos (EDA)
+
+### 4.3.1 Conceptos clave
+
+- **Resumen**: media, mediana, moda, cuantiles, varianza.
+- **Preguntas relevantes**: ¿qué variable predice mejor? ¿hay correlación?
+- **Patrones**: tendencias, estacionalidad, clusters.
+- **Correlación**: Pearson, Spearman, Kendall.
+- **Visualización**: histogramas, boxplots, scatter, heatmap.
+
+### 4.3.2 Explicación razonada
+
+El **EDA** busca entender los datos antes de modelar. Se responde a preguntas como: ¿hay valores atípicos? ¿qué variables están correlacionadas? ¿hay grupos naturales?
+
+**Correlación**:
+- Pearson: lineal, variables continuas normales.
+- Spearman: monotónica, no requiere normalidad.
+- Kendall: ordinal, muestras pequeñas.
+
+**Visualización**: `matplotlib`, `seaborn`. Un heatmap de correlación revela relaciones. Un boxplot detecta outliers.
+
+**Patrones**: series temporales (tendencia, estacionalidad), clusters (KMeans), asociaciones (reglas).
+
+### 4.3.3 Práctica guiada
+
+```python
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+np.random.seed(0)
+df = pd.DataFrame({
+    "x": np.random.randn(100),
+    "y": np.random.randn(100),
+    "z": np.random.randn(100)
+})
+df["y"] = df["x"] * 0.8 + np.random.randn(100) * 0.2
+
+# Resumen
+print(df.describe())
+print(df.corr(method="pearson"))
+print(df.corr(method="spearman"))
+
+# Visualización
+sns.pairplot(df)
+plt.show()
+
+sns.heatmap(df.corr(), annot=True, cmap="coolwarm")
+plt.show()
+
+sns.boxplot(data=df)
+plt.show()
+
+# Preguntas
+print("Correlación x-y:", df["x"].corr(df["y"]))
+```
+
+### 4.3.4 Test
+
+1. La media es sensible a…  
+ a) nada b) outliers c) moda d) mediana → **b**
+2. La mediana es…  
+ a) promedio b) valor central c) moda d) varianza → **b**
+3. Pearson mide…  
+ a) monotónica b) lineal c) ordinal d) nada → **b**
+4. Spearman mide…  
+ a) lineal b) monotónica c) ordinal d) nada → **b**
+5. Un heatmap de correlación muestra…  
+ a) valores b) relaciones c) tipos d) nulos → **b**
+6. Un boxplot detecta…  
+ a) media b) outliers c) moda d) nada → **b**
+7. `describe` incluye…  
+ a) solo media b) estadísticas c) tipos d) nulos → **b**
+8. La varianza mide…  
+ a) centro b) dispersión c) forma d) nada → **b**
+9. Un patrón estacional…  
+ a) tendencia b) repetición periódica c) outlier d) nulo → **b**
+10. EDA sirve para…  
+ a) modelar b) entender datos c) desplegar d) nada → **b**
+
+---
+
+## Epígrafe 4.4 — Desarrollo de modelos en Python
+
+### 4.4.1 Conceptos clave
+
+- **Regresión lineal**: `y = a + bx + e`.
+- **Regresión no lineal**: polinómica, logística, árboles.
+- **Muestreo**: train/test split, validación cruzada.
+- **Predicción**: `predict`, métricas (MSE, RMSE, R²).
+- **Precisión y validez**: sobreajuste, subajuste.
+
+### 4.4.2 Explicación razonada
+
+**Regresión lineal**: modela relación entre variable dependiente y una o más independientes. Se ajusta minimizando suma de cuadrados. `scikit-learn` o `statsmodels`.
+
+**No lineal**: cuando la relación no es lineal. Se usan transformaciones, polinomios, árboles, SVM, redes.
+
+**Muestreo**: dividir en train/test. Validación cruzada (k-fold) para estimar rendimiento.
+
+**Métricas**:
+- MSE: error cuadrático medio.
+- RMSE: raíz del MSE.
+- R²: proporción de varianza explicada.
+
+**Sobreajuste**: modelo memoriza train, mal en test. Soluciones: regularización, más datos, modelo más simple.
+
+### 4.4.3 Práctica guiada
+
+```python
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+# Datos sintéticos
+np.random.seed(0)
+X = np.random.rand(100, 1) * 10
+y = 2 * X.squeeze() + 1 + np.random.randn(100)
+
+# Split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+# Modelo
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Predicción
+y_pred = model.predict(X_test)
+print("Coef:", model.coef_, "Intercepto:", model.intercept_)
+print("MSE:", mean_squared_error(y_test, y_pred))
+print("R²:", r2_score(y_test, y_pred))
+
+# No lineal: polinómica
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.pipeline import make_pipeline
+
+poly = make_pipeline(PolynomialFeatures(2), LinearRegression())
+poly.fit(X_train, y_train)
+print("R² poly:", poly.score(X_test, y_test))
+```
+
+### 4.4.4 Test
+
+1. Regresión lineal ajusta…  
+ a) polinomio b) recta c) árbol d) red → **b**
+2. `train_test_split` sirve para…  
+ a) normalizar b) dividir c) modelar d) predecir → **b**
+3. MSE mide…  
+ a) error absoluto b) error cuadrático c) R² d) nada → **b**
+4. R² mide…  
+ a) error b) varianza explicada c) media d) nada → **b**
+5. Sobreajuste es…  
+ a) buen test b) mal test c) train=test d) nada → **b**
+6. Validación cruzada…  
+ a) 1 split b) k splits c) sin split d) nada → **b**
+7. Regresión logística…  
+ a) lineal b) clasificación c) cluster d) nada → **b**
+8. Polinómica es…  
+ a) lineal b) no lineal c) árbol d) red → **b**
+9. `predict` devuelve…  
+ a) modelo b) predicciones c) métricas d) datos → **b**
+10. Regularización evita…  
+ a) subajuste b) sobreajuste c) nada d) todo → **b**
+
+---
+
+# Cierre
+
+Este desarrollo cubre los **4 módulos** con:
+
+- **Conceptos clave** explicados.
+- **Razonamiento** para estudiantes de informática.
+- **Prácticas ejecutables** en terminal o IDE.
+- **Errores frecuentes**.
+- **10 preguntas tipo test** por epígrafe con 4 opciones y 1 correcta.
