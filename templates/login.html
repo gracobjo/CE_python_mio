@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CE Python — Iniciar sesión</title>
+  <meta name="description" content="Portal del Curso de Especialización en Python. Accede como profesor o alumno."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <style>
+    /* ── Login page specific ─────────────────────────────────── */
+    body.login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #0a0e1a;
+    }
+    .login-bg {
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% -10%, rgba(55,118,171,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 110%, rgba(255,212,59,0.10) 0%, transparent 60%),
+        #0a0e1a;
+      z-index: 0;
+    }
+    /* Animated Python-themed blobs */
+    .login-bg::before, .login-bg::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: .25;
+      animation: float 12s ease-in-out infinite alternate;
+    }
+    .login-bg::before {
+      width: 600px; height: 600px;
+      top: -150px; left: -150px;
+      background: #3776ab;
+    }
+    .login-bg::after {
+      width: 500px; height: 500px;
+      bottom: -150px; right: -100px;
+      background: #ffd43b;
+      animation-delay: -6s;
+    }
+    @keyframes float {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(40px, 30px) scale(1.1); }
+    }
+    .login-wrap {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 880px;
+      padding: 2rem;
+      display: flex; flex-direction: column; align-items: center; gap: 2rem;
+    }
+    /* Header */
+    .login-brand {
+      text-align: center;
+    }
+    .login-brand .python-snake {
+      font-size: 3.5rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 24px rgba(55,118,171,.6));
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { filter: drop-shadow(0 0 24px rgba(55,118,171,.5)); }
+      50%       { filter: drop-shadow(0 0 40px rgba(55,118,171,.9)); }
+    }
+    .login-brand h1 {
+      margin: .6rem 0 .25rem;
+      font-size: 1.9rem; font-weight: 700; letter-spacing: -.5px;
+      background: linear-gradient(135deg, #e6edf3 30%, #7db8e0);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .login-brand p {
+      color: #7d8590; font-size: .9rem;
+    }
+    /* Role cards */
+    .role-cards {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;
+      width: 100%; max-width: 600px;
+    }
+    .role-card {
+      cursor: pointer;
+      background: rgba(22,27,34,.85);
+      border: 2px solid rgba(48,54,61,.8);
+      border-radius: 16px;
+      padding: 2rem 1.5rem 1.75rem;
+      text-align: center;
+      transition: all .25s ease;
+      backdrop-filter: blur(12px);
+      position: relative; overflow: hidden;
+    }
+    .role-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      opacity: 0;
+      transition: opacity .25s;
+    }
+    .role-card.card-prof::before { background: radial-gradient(circle at 50% 0%, rgba(188,140,255,.12), transparent 70%); }
+    .role-card.card-alu::before  { background: radial-gradient(circle at 50% 0%, rgba(55,118,171,.15), transparent 70%); }
+    .role-card:hover { transform: translateY(-4px); border-color: rgba(125,140,160,.5); }
+    .role-card:hover::before { opacity: 1; }
+    .role-card.active.card-prof { border-color: #bc8cff; box-shadow: 0 0 0 1px #bc8cff, 0 8px 32px rgba(188,140,255,.2); }
+    .role-card.active.card-alu  { border-color: #3776ab; box-shadow: 0 0 0 1px #3776ab, 0 8px 32px rgba(55,118,171,.25); }
+    .role-card .rc-icon { font-size: 3rem; line-height: 1; margin-bottom: .75rem; display: block; }
+    .role-card h2 { font-size: 1.15rem; font-weight: 600; color: #e6edf3; margin: 0 0 .35rem; }
+    .role-card p  { font-size: .8rem; color: #7d8590; margin: 0; line-height: 1.5; }
+    .role-card .check {
+      position: absolute; top: 1rem; right: 1rem;
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; color: #fff;
+      opacity: 0; transform: scale(.5);
+      transition: all .2s ease;
+    }
+    .role-card.active.card-prof .check { background: #bc8cff; opacity: 1; transform: scale(1); }
+    .role-card.active.card-alu  .check { background: #3776ab; opacity: 1; transform: scale(1); }
+    /* Login form */
+    .login-form-wrap {
+      width: 100%; max-width: 420px;
+      background: rgba(22,27,34,.9);
+      border: 1px solid rgba(48,54,61,.8);
+      border-radius: 16px;
+      padding: 2rem;
+      backdrop-filter: blur(16px);
+      transition: all .35s ease;
+    }
+    .login-form-wrap.hidden { opacity: 0; transform: translateY(12px); pointer-events: none; }
+    .login-form-wrap .form-title {
+      font-size: 1.05rem; font-weight: 600; color: #e6edf3;
+      margin: 0 0 1.5rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .field { margin-bottom: 1rem; }
+    .field label {
+      display: block; font-size: .8rem; font-weight: 500; color: #7d8590;
+      margin-bottom: .4rem; letter-spacing: .04em; text-transform: uppercase;
+    }
+    .field input {
+      width: 100%; box-sizing: border-box;
+      background: rgba(13,17,23,.8);
+      border: 1px solid rgba(48,54,61,.9);
+      border-radius: 10px;
+      padding: .7rem 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: .9rem;
+      color: #e6edf3;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .field input:focus {
+      border-color: #3776ab;
+      box-shadow: 0 0 0 3px rgba(55,118,171,.2);
+    }
+    .btn-login {
+      width: 100%; margin-top: .5rem;
+      padding: .85rem;
+      background: linear-gradient(135deg, #3776ab, #2563a8);
+      border: none; border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: .95rem; font-weight: 600;
+      color: #fff; cursor: pointer;
+      transition: all .2s ease;
+      letter-spacing: .02em;
+    }
+    .btn-login:hover { background: linear-gradient(135deg, #4388c0, #3776ab); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(55,118,171,.4); }
+    .btn-login:active { transform: translateY(0); }
+    .error-msg {
+      background: rgba(248,81,73,.12);
+      border: 1px solid rgba(248,81,73,.3);
+      border-radius: 8px; padding: .65rem 1rem;
+      color: #f85149; font-size: .85rem;
+      margin-bottom: 1rem;
+    }
+    .hint-text { text-align: center; margin-top: 1rem; font-size: .78rem; color: #4d5662; }
+    .hint-text code { font-family: 'JetBrains Mono', monospace; color: #5a6472; }
+    @media (max-width: 580px) {
+      .role-cards { grid-template-columns: 1fr; max-width: 340px; }
+    }
+  </style>
+</head>
+<body class="login-page">
+  <div class="login-bg"></div>
+
+  <div class="login-wrap">
+    <!-- Branding -->
+    <div class="login-brand">
+      <div class="python-snake">🐍</div>
+      <h1>Curso de Especialización en Python</h1>
+      <p>Portal interactivo · Selecciona tu perfil para continuar</p>
+    </div>
+
+    <!-- Role selection -->
+    <div class="role-cards" id="roleCards">
+      <div class="role-card card-prof" id="card-profesor" onclick="selectRole('profesor')" tabindex="0" role="button" aria-pressed="false">
+        <span class="check">✓</span>
+        <span class="rc-icon">👩‍🏫</span>
+        <h2>Profesorado</h2>
+        <p>Accede al notebook completo con soluciones y respuestas de los tests</p>
+      </div>
+      <div class="role-card card-alu" id="card-alumno" onclick="selectRole('alumno')" tabindex="0" role="button" aria-pressed="false">
+        <span class="check">✓</span>
+        <span class="rc-icon">👨‍🎓</span>
+        <h2>Alumnado</h2>
+        <p>Accede al notebook con ejercicios para completar y tests de autoevaluación</p>
+      </div>
+    </div>
+
+    <!-- Login form -->
+    <div class="login-form-wrap hidden" id="loginForm">
+      <p class="form-title" id="formTitle">🔐 Introduce tus credenciales</p>
+      {% if error %}
+      <div class="error-msg">⚠ {{ error }}</div>
+      {% endif %}
+      <form method="post" action="{{ url_for('login') }}">
+        <input type="hidden" name="username" id="hiddenUser"/>
+        <div class="field">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" name="password" placeholder="••••••••••" autocomplete="current-password" autofocus required/>
+        </div>
+        <button type="submit" class="btn-login" id="submitBtn">Entrar →</button>
+      </form>
+      <p class="hint-text">
+        Profesor: <code>profesor</code> / <code>profesor123</code> &nbsp;·&nbsp;
+        Alumno: <code>alumno</code> / <code>alumno123</code>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    let currentRole = null;
+    const roles = { profesor: '👩‍🏫 Profesorado', alumno: '👨‍🎓 Alumnado' };
+
+    function selectRole(role) {
+      if (currentRole === role) return;
+      currentRole = role;
+
+      // Update card states
+      document.querySelectorAll('.role-card').forEach(c => {
+        c.classList.remove('active');
+        c.setAttribute('aria-pressed', 'false');
+      });
+      const card = document.getElementById('card-' + role);
+      card.classList.add('active');
+      card.setAttribute('aria-pressed', 'true');
+
+      // Update form
+      document.getElementById('hiddenUser').value = role;
+      document.getElementById('formTitle').textContent = `🔐 ${roles[role]} — introduce tu contraseña`;
+      document.getElementById('submitBtn').textContent = `Entrar como ${role === 'profesor' ? 'Profesorado' : 'Alumnado'} →`;
+
+      // Show form
+      const form = document.getElementById('loginForm');
+      form.classList.remove('hidden');
+      setTimeout(() => document.getElementById('password').focus(), 80);
+    }
+
+    // Keyboard support for cards
+    document.querySelectorAll('.role-card').forEach(card => {
+      card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          card.click();
+        }
+      });
+    });
+
+    // If there was an error, re-show the form with the stored role
+    {% if error %}
+    selectRole('{{ request.form.get("username", "") }}');
+    {% endif %}
+  </script>
+</body>
+</html>
