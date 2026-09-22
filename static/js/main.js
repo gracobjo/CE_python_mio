@@ -119,3 +119,92 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     }
   });
 });
+
+/* ── Interactive Code Cell Execution ─────────────────────────────────── */
+function escapeHtml(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function runCell(btn) {
+  const article = btn.closest('.nb-cell');
+  if (!article) return;
+  const pre = article.querySelector('.hl pre');
+  if (!pre) return;
+  const code = pre.innerText;
+
+  const origHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spin-icon">⏳</span> Ejecutando...`;
+
+  let liveOut = article.querySelector('.live-output');
+  if (!liveOut) {
+    liveOut = document.createElement('div');
+    liveOut.className = 'live-output';
+    article.appendChild(liveOut);
+  }
+  liveOut.innerHTML = `
+    <div class="live-out-header">
+      <span class="live-tag">⚡ Ejecución en Python...</span>
+    </div>
+    <div class="live-out-loading">Ejecutando celda...</div>
+  `;
+
+  fetch('/api/run_cell', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code: code })
+  })
+  .then(res => {
+    if (!res.ok) {
+      return res.json().then(err => { throw new Error(err.error || `HTTP ${res.status}`); });
+    }
+    return res.json();
+  })
+  .then(data => {
+    btn.disabled = false;
+    btn.innerHTML = origHtml;
+
+    const isSuccess = (data.exit_code === 0);
+    const statusTag = isSuccess
+      ? '<span class="live-status-ok">✓ Éxito (0)</span>'
+      : `<span class="live-status-err">✗ Error (${data.exit_code})</span>`;
+
+    let outContent = '';
+    if (data.stdout) {
+      outContent += `<pre class="nb-out out-stdout">${escapeHtml(data.stdout)}</pre>`;
+    }
+    if (data.stderr) {
+      outContent += `<pre class="nb-out out-stderr">${escapeHtml(data.stderr)}</pre>`;
+    }
+    if (!data.stdout && !data.stderr) {
+      outContent = '<div class="live-out-empty">✓ La celda se ejecutó correctamente sin salida en consola.</div>';
+    }
+
+    liveOut.innerHTML = `
+      <div class="live-out-header">
+        <span class="live-tag">⚡ Salida interactiva</span>
+        ${statusTag}
+      </div>
+      <div class="live-out-body">
+        ${outContent}
+      </div>
+    `;
+  })
+  .catch(err => {
+    btn.disabled = false;
+    btn.innerHTML = origHtml;
+    liveOut.innerHTML = `
+      <div class="live-out-header">
+        <span class="live-tag live-tag-err">⚠ Error de ejecución</span>
+      </div>
+      <pre class="nb-out out-error"><b>Error:</b> ${escapeHtml(err.message)}</pre>
+    `;
+  });
+}
+

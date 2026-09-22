@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CE Python — {{ user.label }} · {{ user.nb_name }}</title>
-  <meta name="description" content="Libro de texto interactivo del Curso de Especialización en Python."/>
+  <title>CE Python — {{ user.label }} · {{ current_nb.title }}</title>
+  <meta name="description" content="Libro de texto interactivo del Curso de Especialización en Python — {{ current_nb.title }}."/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
@@ -21,6 +21,24 @@
         <div>
           <span class="brand-title">CE Python</span>
           <span class="brand-sub">Curso de Especialización</span>
+        </div>
+      </div>
+
+      <!-- Notebook Selector -->
+      <div class="nb-selector-container" id="nbSelectorContainer">
+        <label for="nbSelect" class="nb-selector-label">
+          <span class="nb-icon">📓</span>
+          <span class="nb-selector-text">Cuaderno:</span>
+        </label>
+        <div class="nb-select-wrapper">
+          <select id="nbSelect" class="nb-select" onchange="if(this.value) window.location.href=this.value" aria-label="Seleccionar cuaderno">
+            {% for nb in notebooks %}
+              <option value="{{ url_for('notebook', nb_name=nb.rel_path) }}" {% if nb.rel_path == current_nb.rel_path %}selected{% endif %}>
+                [{{ nb.badge }}] {{ nb.title }} — {{ nb.filename }}
+              </option>
+            {% endfor %}
+          </select>
+          <span class="nb-select-arrow">▼</span>
         </div>
       </div>
 
@@ -107,6 +125,27 @@
 
     <!-- RIGHT SIDEBAR: Resources & Official Links -->
     <aside class="res-sidebar" id="resSidebar" aria-label="Recursos">
+
+      <!-- Notebooks list -->
+      <div class="res-card res-notebooks">
+        <h3 class="res-title">📚 Cuadernos ({{ notebooks|length }})</h3>
+        <ul class="res-nb-list">
+          {% for nb in notebooks %}
+            <li class="res-nb-item {% if nb.rel_path == current_nb.rel_path %}active{% endif %}">
+              <a href="{{ url_for('notebook', nb_name=nb.rel_path) }}" class="res-nb-link" title="{{ nb.title }} ({{ nb.filename }})">
+                <div class="res-nb-header-row">
+                  <span class="res-nb-badge {{ nb.badge_class }}">{{ nb.badge }}</span>
+                  {% if nb.rel_path == current_nb.rel_path %}
+                    <span class="res-nb-current-tag">● Activo</span>
+                  {% endif %}
+                </div>
+                <span class="res-nb-title">{{ nb.title }}</span>
+                <span class="res-nb-file">{{ nb.filename }}</span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
 
       <!-- Quick reference -->
       <div class="res-card">

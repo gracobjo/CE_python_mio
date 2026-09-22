@@ -204,6 +204,13 @@ def render_notebook(nb_path: Path) -> dict:
                 f'<span class="exec-lbl">In&nbsp;[{exc}]</span>'
                 if exc else ''
             )
+            run_btn = (
+                '<button class="btn-run" onclick="runCell(this)" title="Ejecutar celda">'
+                '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">'
+                '<polygon points="5 3 19 12 5 21 5 3"/></svg>'
+                ' Ejecutar'
+                '</button>'
+            )
             copy_btn = (
                 '<button class="btn-copy" onclick="copyCode(this)" title="Copiar código">'
                 '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
@@ -214,7 +221,7 @@ def render_notebook(nb_path: Path) -> dict:
             )
             cells_html.append(
                 f'<article class="nb-cell cell-{kind}" data-id="{cid}">'
-                f'<div class="code-hdr">{badge}{exec_lbl}{copy_btn}</div>'
+                f'<div class="code-hdr">{badge}{exec_lbl}<div class="code-actions">{run_btn}{copy_btn}</div></div>'
                 f'<div class="code-body">{hl}</div>'
                 f'{f"<div class=\"outputs\">{outs_html}</div>" if outs_html else ""}'
                 f'</article>'
