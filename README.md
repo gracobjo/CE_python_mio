@@ -8,6 +8,7 @@ Notebook interactivo del Curso de Especialización en Python con teoría y prác
 | Control de flujo y funciones (profesor) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gracobjo/CE_python_mio/blob/master/CE_Python_CONTROL_FLUJO_FUNCIONES_PROFESOR.ipynb) |
 | Curso — alumnado | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gracobjo/CE_python_mio/blob/master/CE_Python_ALUMNO.ipynb) |
 | Curso — profesorado | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gracobjo/CE_python_mio/blob/master/CE_Python_PROFESOR.ipynb) |
+| Lambda, Filter, Map, Sorted y Decoradores | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gracobjo/CE_python_mio/blob/master/CE_Python_LAMBDA_FILTER_MAP_SORTED_DECORADORES.ipynb) |
 
 ## Contenido
 
