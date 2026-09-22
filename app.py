@@ -55,6 +55,16 @@ KNOWN_NOTEBOOKS = {
         'badge': 'Profesor',
         'badge_class': 'bdg-purple',
     },
+    'CE_Python_LAMBDA_MAP_FSTRING_DATOS_ALUMNO.ipynb': {
+        'title': 'Lambda, map, f-string y datos (Alumno)',
+        'badge': 'Alumno',
+        'badge_class': 'bdg-blue',
+    },
+    'CE_Python_LAMBDA_MAP_FSTRING_DATOS_PROFESOR.ipynb': {
+        'title': 'Lambda, map, f-string y datos (Profesor)',
+        'badge': 'Profesor',
+        'badge_class': 'bdg-purple',
+    },
     'CE_Python_LAMBDA_FILTER_MAP_SORTED_DECORADORES.ipynb': {
         'title': 'Lambda, Filter, Map, Sorted y Decoradores',
         'badge': 'Avanzado',
@@ -133,6 +143,8 @@ def get_available_notebooks() -> list[dict]:
             'CE_Python_ALUMNO.ipynb',
             'CE_Python_PROFESOR.ipynb',
             'CE_Python_CONTROL_FLUJO_FUNCIONES_PROFESOR.ipynb',
+            'CE_Python_LAMBDA_MAP_FSTRING_DATOS_ALUMNO.ipynb',
+            'CE_Python_LAMBDA_MAP_FSTRING_DATOS_PROFESOR.ipynb',
             'CE_Python_LAMBDA_FILTER_MAP_SORTED_DECORADORES.ipynb',
             'CE_Python.ipynb',
         ]
