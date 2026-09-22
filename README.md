@@ -1,8 +1,13 @@
 # CE Python — Curso de Especialización en Python
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gracobjo/CE_python_mio/blob/master/CE_Python.ipynb)
-
 Notebook interactivo del Curso de Especialización en Python con teoría y prácticas ejecutables.
+
+| Cuaderno | Colab |
+|---|---|
+| Curso completo | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gracobjo/CE_python_mio/blob/master/CE_Python.ipynb) |
+| Control de flujo y funciones (profesor) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gracobjo/CE_python_mio/blob/master/CE_Python_CONTROL_FLUJO_FUNCIONES_PROFESOR.ipynb) |
+| Curso — alumnado | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gracobjo/CE_python_mio/blob/master/CE_Python_ALUMNO.ipynb) |
+| Curso — profesorado | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gracobjo/CE_python_mio/blob/master/CE_Python_PROFESOR.ipynb) |
 
 ## Contenido
 
@@ -15,7 +20,10 @@ Notebook interactivo del Curso de Especialización en Python con teoría y prác
 ## Cómo ejecutar
 
 ### Google Colab
-Haz clic en el badge **Open in Colab** de arriba.
+
+Haz clic en el badge **Open in Colab** de la tabla de arriba. En Colab usa **Entorno de ejecución → Ejecutar todo**. El cuaderno de control de flujo y funciones no instala paquetes (solo biblioteca estándar, Python 3.10+).
+
+Enlace directo: [CE_Python_CONTROL_FLUJO_FUNCIONES_PROFESOR.ipynb](https://colab.research.google.com/github/gracobjo/CE_python_mio/blob/master/CE_Python_CONTROL_FLUJO_FUNCIONES_PROFESOR.ipynb)
 
 ### Local (VS Code / Jupyter)
 ```bash
